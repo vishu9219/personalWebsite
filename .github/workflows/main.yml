@@ -1,0 +1,23 @@
+name: CI
+on:
+  push:
+    branches:
+      - main  # Set a branch to deploy
+  pull_request:
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "0.101.0"
+
+      - name: Build
+        run: hugo -D
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass -y
+
+      - name: Deploy
+        run: sshpass -p "${{ secrets.PASSWORD }}" scp -r ./public/ root@${{ secrets.SERVER_IP }}:/some/remote/path
